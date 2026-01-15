@@ -63,6 +63,9 @@ jobs:
           # 指纹配置
           NS_IMPERSONATE: ${{ secrets.NS_IMPERSONATE || 'chrome110' }}
 
+          #固定/随机签到
+          NS_RANDOM: ${{ secrets.NS_RANDOM }}
+
           # 通知推送配置
           TG_BOT_TOKEN: ${{ secrets.TG_BOT_TOKEN }}
           TG_USER_ID: ${{ secrets.TG_USER_ID }}
