@@ -5,12 +5,13 @@ on:
     branches:
       - main
   schedule:
-    - cron: '00 00 * * *'  # 北京时间 08:00 (UTC+8)，对应UTC时间 00:00
+    - cron: '0 0 * * *'  # 北京时间 08:00 (UTC+8)
   workflow_dispatch:
 
+# 权限最小化原则
 permissions:
   contents: read
-  actions: write  # 添加写入Actions变量的权限
+  actions: write
 
 jobs:
   run-nodeseek-sign:
@@ -18,25 +19,26 @@ jobs:
 
     steps:
       - name: 检出代码仓库
-        uses: actions/checkout@v3
-      
+        uses: actions/checkout@v4
+
       - name: 配置Python环境
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.11.8'
+          python-version: '3.11'
+          cache: 'pip' # 自动处理依赖缓存，加快后续运行速度
 
       - name: 安装依赖包
         run: |
-          pip install curl_cffi requests --upgrade
-
+          python -m pip install --upgrade pip
+          pip install curl_cffi requests
 
       - name: 运行签到脚本
         env:
-          # 基本账号
+          # 核心账号信息
           USER: ${{ secrets.USER }}
           PASS: ${{ secrets.PASS }}
           
-          # 额外账号1-5
+          # 额外账号 (1-5)
           USER1: ${{ secrets.USER1 }}
           PASS1: ${{ secrets.PASS1 }}
           USER2: ${{ secrets.USER2 }}
@@ -48,25 +50,21 @@ jobs:
           USER5: ${{ secrets.USER5 }}
           PASS5: ${{ secrets.PASS5 }}
           
-          # Cookie配置
+          # 签到配置
           NS_COOKIE: ${{ vars.NS_COOKIE || secrets.NS_COOKIE }}
           NS_RANDOM: ${{ secrets.NS_RANDOM }}
-          # 验证码配置
+          NS_IMPERSONATE: ${{ secrets.NS_IMPERSONATE || 'chrome110' }}
+          
+          # 验证码/API配置
           SOLVER_TYPE: ${{ secrets.SOLVER_TYPE }}
           API_BASE_URL: ${{ secrets.API_BASE_URL }}
           CLIENTT_KEY: ${{ secrets.CLIENTT_KEY }}
           
-          # GitHub API配置
+          # GitHub 自动化配置
           GH_PAT: ${{ secrets.GH_PAT }}
           GITHUB_REPOSITORY: ${{ github.repository }}
           
-          # 指纹配置
-          NS_IMPERSONATE: ${{ secrets.NS_IMPERSONATE || 'chrome110' }}
-
-          #固定/随机签到
-          NS_RANDOM: ${{ secrets.NS_RANDOM }}
-
-          # 通知推送配置
+          # 通知推送
           TG_BOT_TOKEN: ${{ secrets.TG_BOT_TOKEN }}
           TG_USER_ID: ${{ secrets.TG_USER_ID }}
           TG_THREAD_ID: ${{ secrets.TG_THREAD_ID }}
