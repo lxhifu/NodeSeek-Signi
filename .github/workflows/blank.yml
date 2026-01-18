@@ -5,7 +5,7 @@ on:
     branches:
       - main
   schedule:
-    - cron: '0 1 * * *'  # 北京时间 09:00 (UTC+8)
+    - cron: '43 0 * * *'  # 北京时间 08:43 (UTC+8)
   workflow_dispatch:
 
 # 权限最小化原则
